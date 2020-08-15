@@ -1,5 +1,6 @@
 package com.bridgelabz.webscraping.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
@@ -9,13 +10,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * Purpose : User POJO class & userDetails table created
  *
  * @author Krunal Parate
- * @since  14-09-2020
+ * @since 14-09-2020
  */
 @Document(collection = "userDetails")
-public class User {
+public class User implements Serializable {
 
+	private static final long serialVersionUID = 3062820861321260332L;
 	@Id
-	private int id;
+	private String id;
 	private String firstName;
 	private String middleName;
 	private String lastName;
@@ -24,7 +26,16 @@ public class User {
 	private Date date = new Date();
 	private long phoneNo;
 	private String profilePic;
-	
+	private boolean isValidate = false;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -89,10 +100,18 @@ public class User {
 		this.profilePic = profilePic;
 	}
 
+	public boolean isValidate() {
+		return isValidate;
+	}
+
+	public void setValidate(boolean isValidate) {
+		this.isValidate = isValidate;
+	}
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName
 				+ ", email=" + email + ", password=" + password + ", date=" + date + ", phoneNo=" + phoneNo
-				+ ", profilePic=" + profilePic + "]";
+				+ ", profilePic=" + profilePic + ", isValidate=" + isValidate + "]";
 	}
 }

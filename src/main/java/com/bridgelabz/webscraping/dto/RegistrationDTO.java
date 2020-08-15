@@ -6,9 +6,11 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 /**
- * Purpose : This class validate and hold details of user and transfer data to service
+ * Purpose : This class validate and hold details of user and transfer data to
+ * service
+ * 
  * @author Krunal Parate
- * @since  14-09-2020
+ * @since 14-09-2020
  */
 public class RegistrationDTO {
 	@Valid
@@ -31,42 +33,55 @@ public class RegistrationDTO {
 	public String getFirstName() {
 		return firstName;
 	}
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
+
 	public String getMiddleName() {
 		return middleName;
 	}
+
 	public void setMiddleName(String middleName) {
 		this.middleName = middleName;
 	}
+
 	public String getLastName() {
 		return lastName;
 	}
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+
 	public String getEmail() {
 		return email;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
 	public long getPhoneNo() {
 		return phoneNo;
 	}
+
 	public void setPhoneNo(long phoneNo) {
 		this.phoneNo = phoneNo;
 	}
+
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
 	public String getCofirmPasword() {
 		return cofirmPasword;
 	}
+
 	public void setCofirmPasword(String cofirmPasword) {
 		this.cofirmPasword = cofirmPasword;
 	}
@@ -76,5 +91,5 @@ public class RegistrationDTO {
 		return "RegistrationDTO [firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName
 				+ ", email=" + email + ", phoneNo=" + phoneNo + ", password=" + password + ", cofirmPasword="
 				+ cofirmPasword + "]";
-	}	
+	}
 }

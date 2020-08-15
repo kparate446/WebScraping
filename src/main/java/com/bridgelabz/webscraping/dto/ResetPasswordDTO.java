@@ -1,6 +1,5 @@
 package com.bridgelabz.webscraping.dto;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -10,20 +9,17 @@ import javax.validation.constraints.Size;
  * @author Krunal Parate
  * @since 14-09-2020
  */
-public class LoginDTO {
-	@NotEmpty
-	@Email(message = "Email should be valid")
-	private String email;
+public class ResetPasswordDTO {
 	@NotEmpty
 	@Size(min = 2, max = 30)
 	private String password;
+	@NotEmpty
+	@Size(min = 2, max = 30)
+	private String confirmPassword;
 
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
+	public ResetPasswordDTO(String password, String confirmPassword) {
+		this.password = password;
+		this.confirmPassword = confirmPassword;
 	}
 
 	public String getPassword() {
@@ -34,8 +30,16 @@ public class LoginDTO {
 		this.password = password;
 	}
 
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	}
+
 	@Override
 	public String toString() {
-		return "LoginDTO [email=" + email + ", password=" + password + "]";
+		return "ResetPasswordDTO [password=" + password + ", confirmPassword=" + confirmPassword + "]";
 	}
 }

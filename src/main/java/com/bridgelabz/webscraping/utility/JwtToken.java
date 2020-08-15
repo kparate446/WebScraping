@@ -8,16 +8,17 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JwtToken {
-
 	SignatureAlgorithm alorithm = SignatureAlgorithm.HS256;
 	// secret Key used by Algorithm
 	static String secretKey = "iamsecretkey";
-	//  Generate the Token
+
+	// Generate the Token
 	public String generateToken(String email) {
 		return Jwts.builder().setId(email).setIssuedAt(new Date(System.currentTimeMillis()))
 				.signWith(alorithm, secretKey).compact();
 
 	}
+
 	// To decode Token
 	public String getToken(String token) {
 		Claims claim = null;

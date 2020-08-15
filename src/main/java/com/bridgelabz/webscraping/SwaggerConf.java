@@ -13,7 +13,6 @@ public class SwaggerConf {
 	@Bean
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("com.bridgelabz.webscraping"))
-				.build();
+				.apis(RequestHandlerSelectors.basePackage("com.bridgelabz.webscraping")).build();
 	}
 }
