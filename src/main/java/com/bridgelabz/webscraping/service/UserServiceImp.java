@@ -20,6 +20,12 @@ import com.bridgelabz.webscraping.dto.ForgotPasswordDTO;
 import com.bridgelabz.webscraping.dto.LoginDTO;
 import com.bridgelabz.webscraping.dto.RegistrationDTO;
 import com.bridgelabz.webscraping.dto.ResetPasswordDTO;
+import com.bridgelabz.webscraping.exception.EmptyFile;
+import com.bridgelabz.webscraping.exception.FileNotUploaded;
+import com.bridgelabz.webscraping.exception.InvalidPassword;
+import com.bridgelabz.webscraping.exception.InvalidUser;
+import com.bridgelabz.webscraping.exception.UserAlreadyPresent;
+import com.bridgelabz.webscraping.message.MessageData;
 import com.bridgelabz.webscraping.message.MessageResponse;
 import com.bridgelabz.webscraping.model.User;
 import com.bridgelabz.webscraping.repository.UserRepository;
@@ -49,6 +55,9 @@ public class UserServiceImp implements IUserService {
 	private EmailSenderService emailSender;
 
 	@Autowired
+	private MessageData messageData;
+
+	@Autowired
 	private MessageResponse massageResponse;
 
 	SimpleMailMessage email;
@@ -76,7 +85,7 @@ public class UserServiceImp implements IUserService {
 		// Check if user is already present or not
 		if (user != null) {
 			LOGGER.warning("User is already present");
-			return new Response(400, "User is already present", false);
+			throw new UserAlreadyPresent(messageData.userAlready_Present);
 		}
 		// store new user data in mapper
 		User userData = mapper.map(registrationDTO, User.class);
@@ -95,7 +104,7 @@ public class UserServiceImp implements IUserService {
 			return new Response(200, "Registration successfully", token);
 		} else {
 			LOGGER.warning("Invalid password");
-			return new Response(400, "Invalid password", false);
+			throw new InvalidPassword(messageData.Invalid_Password);
 		}
 	}
 
@@ -110,7 +119,7 @@ public class UserServiceImp implements IUserService {
 		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid User");
-			return new Response(400, "Invalid user", false);
+			throw new InvalidUser(messageData.Invalid_User);
 		}
 		if (user.isValidate()) {
 			// decode the password
@@ -122,11 +131,11 @@ public class UserServiceImp implements IUserService {
 				return new Response(200, "Login successfully", token);
 			} else {
 				LOGGER.warning("Invalid password");
-				return new Response(400, "Invalid password", false);
+				throw new InvalidPassword(messageData.Invalid_Password);
 			}
 		} else {
 			LOGGER.warning("Not Valid");
-			return new Response(400, "Not Valid", false);
+			throw new InvalidUser(messageData.Invalid_User);
 		}
 	}
 
@@ -140,7 +149,7 @@ public class UserServiceImp implements IUserService {
 		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid User");
-			return new Response(400, "Invalid user", false);
+			throw new InvalidUser(messageData.Invalid_User);
 		} else
 			user.setValidate(true);
 		userRepository.save(user);
@@ -158,7 +167,7 @@ public class UserServiceImp implements IUserService {
 		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid user");
-			return new Response(400, "Invalid user", false);
+			throw new InvalidUser(messageData.Invalid_User);
 		}
 		if (user.isValidate()) {
 			String token = jwtToken.generateToken(forgotPasswordDTO.getEmail());
@@ -170,7 +179,7 @@ public class UserServiceImp implements IUserService {
 			return new Response(200, "Sent the token in mail", token);
 		}
 		LOGGER.warning("Invalid User");
-		return new Response(400, "Invalid user", false);
+		throw new InvalidUser(messageData.Invalid_User);
 	}
 
 	/**
@@ -183,7 +192,7 @@ public class UserServiceImp implements IUserService {
 		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid user");
-			return new Response(400, "Invalid user", false);
+			throw new InvalidUser(messageData.Invalid_User);
 		} else if (resetPasswordDTO.getPassword().equals(resetPasswordDTO.getConfirmPassword())) {
 			user.setPassword(passwordEncoder.encode(resetPasswordDTO.getPassword()));
 			userRepository.save(user);
@@ -191,7 +200,7 @@ public class UserServiceImp implements IUserService {
 			return new Response(200, "Password Reset Successfully", true);
 		}
 		LOGGER.warning("Invalid Password");
-		return new Response(400, "Invalid password", false);
+		throw new InvalidPassword(messageData.Invalid_Password);
 	}
 
 	/**
@@ -201,12 +210,11 @@ public class UserServiceImp implements IUserService {
 	public Response getAllUsers() {
 		if (userRepository.findAll() == null) {
 			LOGGER.warning("Invalid user");
-			return new Response(400, "Invalid user", false);
+			throw new InvalidUser(messageData.Invalid_User);
 		} else {
 			List<User> users = userRepository.findAll();
 			LOGGER.info("Successfully showing the User table data");
 			return new Response(200, "Show all users", users);
-
 		}
 	}
 
@@ -214,20 +222,20 @@ public class UserServiceImp implements IUserService {
 	 * delete particular user in database though user id
 	 */
 	@Override
-	public Response deleteUser(String token, int id) {
+	public Response deleteUser(String token, String id) {
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
 		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid user");
-			return new Response(400, "Invalid user", false);
+			throw new InvalidUser(messageData.Invalid_User);
 		}
 		if (id == user.getId()) {
-			userRepository.deleteById(id);
+//			userRepository.deleteById(id);
 			LOGGER.info("Successfully deleted user");
 			return new Response(200, "Successfully deleted user", true);
 		} else {
-			return new Response(400, "Invalid User", false);
+			throw new InvalidUser(messageData.Invalid_User);
 		}
 	}
 
@@ -241,11 +249,11 @@ public class UserServiceImp implements IUserService {
 		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid user");
-			return new Response(400, "Invalid user", false);
+			throw new InvalidUser(messageData.Invalid_User);
 		}
 		// file is empty or not
 		if (file.isEmpty())
-			return new Response(400, "File is Empty", false);
+			throw new EmptyFile(messageData.File_Is_Empty);
 		File uploadFile = new File(file.getOriginalFilename());
 		try {
 			BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(uploadFile));
@@ -263,10 +271,10 @@ public class UserServiceImp implements IUserService {
 				"242443158528625", "api_secret", "q9p9sxtwVI-kSM5CVt-Yrc4_B0c"));
 		Map<?, ?> uploadProfile;
 		try {
-			// this upload the image on cloudinary ->Query -> Mapped
+			// this upload the image on cloudinary
 			uploadProfile = cloudinary.uploader().upload(uploadFile, ObjectUtils.emptyMap());
 		} catch (IOException e) {
-			return new Response(400, "File not uploaded", false);
+			throw new FileNotUploaded(messageData.File_Not_Upload);
 		}
 		// Set profile picture in url type in database
 		user.setProfilePic(uploadProfile.get("secure_url").toString());
