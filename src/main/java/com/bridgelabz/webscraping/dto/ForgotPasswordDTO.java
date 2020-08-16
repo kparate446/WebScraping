@@ -1,7 +1,7 @@
 package com.bridgelabz.webscraping.dto;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 
 /**
  * Purpose : This class validate and hold details of user and transfer data to service
@@ -10,7 +10,7 @@ import javax.validation.constraints.NotEmpty;
  * @since 14-09-2020
  */
 public class ForgotPasswordDTO {
-	@NotEmpty
+	@NotBlank
 	@Email(message = "Email should be valid")
 	private String email;
 

@@ -2,7 +2,7 @@ package com.bridgelabz.webscraping.dto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -14,19 +14,24 @@ import javax.validation.constraints.Pattern;
  */
 public class RegistrationDTO {
 	@Valid
-	@NotEmpty(message = "Please provide a firstName")
+	@NotBlank(message = "First Name is mandatory")
 	private String firstName;
-	@NotEmpty(message = "Please provide a middleName")
+
+	@NotBlank(message = "Middle Name is mandatory")
 	private String middleName;
-	@NotEmpty(message = "Please provide a lastName")
+
+	@NotBlank(message = "Last Name is mandatory")
 	private String lastName;
-	@NotEmpty
+
+	@NotBlank
 	@Email(message = "Email should be valid")
 	private String email;
-	@NotEmpty(message = "Please provide a Mobile Number")
+
+	@NotBlank(message = "Phone number is mandatory")
 	@Pattern(regexp = "^[0-9]*$")
 	private long phoneNo;
-	@NotEmpty
+
+	@NotBlank(message = "Password is mandatory")
 	private String password;
 	private String cofirmPasword;
 

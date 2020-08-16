@@ -14,8 +14,16 @@ import com.bridgelabz.webscraping.response.Response;
  */
 public interface IUserService {
 	Response addUser(RegistrationDTO registrationDTO);
-	Response loginUser(LoginDTO loginDTO);
+
 	Response verifiedUser(String token);
+
+	Response loginUser(LoginDTO loginDTO);
+
 	Response forgotPassword(ForgotPasswordDTO forgotPasswordDTO);
+
 	Response resetPassword(String token, ResetPasswordDTO resetPasswordDTO);
+
+	Response getAllUsers();
+
+	Response deleteUser(String token, String id);
 }

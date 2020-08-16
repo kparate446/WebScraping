@@ -1,5 +1,7 @@
 package com.bridgelabz.webscraping.service;
 
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -67,6 +69,7 @@ public class UserServiceImp implements IUserService {
 			LOGGER.warning("User is already present");
 			return new Response(400, "User is already present", false);
 		}
+		// store new user data in mapper
 		User userData = mapper.map(registrationDTO, User.class);
 		// To generate the Token
 		String token = jwtToken.generateToken(userData.getEmail());
@@ -88,7 +91,7 @@ public class UserServiceImp implements IUserService {
 	}
 
 	/**
-	 * Login user
+	 * login user though email id or password
 	 */
 	@Override
 	public Response loginUser(LoginDTO loginDTO) {
@@ -118,7 +121,7 @@ public class UserServiceImp implements IUserService {
 	}
 
 	/**
-	 * Verified user
+	 * token user send verify token for checking for token is match or not
 	 */
 	@Override
 	public Response verifiedUser(String token) {
@@ -135,7 +138,8 @@ public class UserServiceImp implements IUserService {
 	}
 
 	/**
-	 * Forgot password
+	 * find user email present or not and validate for checking send email for
+	 * verify user email id
 	 */
 	@Override
 	public Response forgotPassword(ForgotPasswordDTO forgotPasswordDTO) {
@@ -158,7 +162,7 @@ public class UserServiceImp implements IUserService {
 	}
 
 	/**
-	 * Reset Password
+	 * Purpose user send new password for changing password should change i
 	 */
 	@Override
 	public Response resetPassword(String token, ResetPasswordDTO resetPasswordDTO) {
@@ -175,5 +179,41 @@ public class UserServiceImp implements IUserService {
 		}
 		LOGGER.warning("Invalid Password");
 		return new Response(400, "Invalid password", false);
+	}
+
+	/**
+	 * show all user details
+	 */
+	@Override
+	public Response getAllUsers() {
+		if (userRepository.findAll() == null) {
+			LOGGER.warning("Invalid user");
+			return new Response(400, "Invalid user", false);
+		} else {
+			List<User> users = userRepository.findAll();
+			LOGGER.info("Successfully showing the User table data");
+			return new Response(200, "Show all users", users);
+
+		}
+	}
+
+	/**
+	 * delete particular user in database though user id
+	 */
+	@Override
+	public Response deleteUser(String token, int id) {
+		String email = jwtToken.getToken(token);
+		User user = userRepository.findByEmail(email);
+		if (user == null) {
+			LOGGER.warning("Invalid user");
+			return new Response(400, "Invalid user", false);
+		}
+		if (id == user.getId()) {
+			userRepository.deleteById(id);
+			LOGGER.info("Successfully deleted user");
+			return new Response(200, "Successfully deleted user", true);
+		} else {
+			return new Response(400, "Invalid User", false);
+		}
 	}
 }

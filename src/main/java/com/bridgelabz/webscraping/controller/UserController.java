@@ -5,6 +5,9 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -80,7 +83,7 @@ public class UserController {
 	}
 
 	/**
-	 * Purpose :- Reset Password
+	 * Purpose : Reset Password
 	 * 
 	 * @param token            : Verified the Token
 	 * @param resetPasswordDTO : Access the resetPasswordDTO Data
@@ -90,5 +93,29 @@ public class UserController {
 	public ResponseEntity<String> resetpassword(@RequestHeader String token, ResetPasswordDTO resetPasswordDTO) {
 		Response response = service.resetPassword(token, resetPasswordDTO);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
+	}
+
+	/**
+	 * Purpose : Getting all users details
+	 * 
+	 * @return : response
+	 */
+	@GetMapping("/getallusers")
+	public ResponseEntity<Response> getAllUsers() {
+		Response response = service.getAllUsers();
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
+	}
+
+	/**
+	 * Purpose : Deleted user
+	 * 
+	 * @param token  : Verified the user
+	 * @param userId : Person id
+	 */
+	@DeleteMapping("/deleteuser/{userId}")
+	public ResponseEntity<String> deleteUser(@RequestHeader String token, @PathVariable String userId) {
+		Response response = service.deleteUser(token, userId);
+		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
+
 	}
 }

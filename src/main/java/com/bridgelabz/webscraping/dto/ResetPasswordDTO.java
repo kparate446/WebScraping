@@ -1,19 +1,21 @@
 package com.bridgelabz.webscraping.dto;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 /**
- * Purpose : This class validate and hold details of user and transfer data to service
+ * Purpose : This class validate and hold details of user and transfer data to
+ * service
  * 
  * @author Krunal Parate
  * @since 14-09-2020
  */
 public class ResetPasswordDTO {
-	@NotEmpty
+	@NotBlank(message = "Password is mandatory")
 	@Size(min = 2, max = 30)
 	private String password;
-	@NotEmpty
+
+	@NotBlank(message = "Confirm password is mandatory")
 	@Size(min = 2, max = 30)
 	private String confirmPassword;
 
