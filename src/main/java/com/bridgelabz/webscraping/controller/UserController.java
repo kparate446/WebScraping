@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.webscraping.dto.ForgotPasswordDTO;
 import com.bridgelabz.webscraping.dto.LoginDTO;
@@ -116,6 +117,16 @@ public class UserController {
 	public ResponseEntity<String> deleteUser(@RequestHeader String token, @PathVariable String userId) {
 		Response response = service.deleteUser(token, userId);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
+	}
 
+	/**
+	 * @param token
+	 * @param file
+	 * @return
+	 */
+	@PostMapping("/uploadImage")
+	public ResponseEntity<String> uploadImage(@RequestHeader String token, @RequestHeader MultipartFile file) {
+		Response response = service.uploadImage(token, file);
+		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
 	}
 }

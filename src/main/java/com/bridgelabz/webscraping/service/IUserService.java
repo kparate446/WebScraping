@@ -1,5 +1,7 @@
 package com.bridgelabz.webscraping.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.bridgelabz.webscraping.dto.ForgotPasswordDTO;
 import com.bridgelabz.webscraping.dto.LoginDTO;
 import com.bridgelabz.webscraping.dto.RegistrationDTO;
@@ -26,4 +28,6 @@ public interface IUserService {
 	Response getAllUsers();
 
 	Response deleteUser(String token, String id);
+
+	Response uploadImage(String token, MultipartFile file);
 }

@@ -1,12 +1,19 @@
 package com.bridgelabz.webscraping.service;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.webscraping.configuration.PasswordConfiguration;
 import com.bridgelabz.webscraping.dto.ForgotPasswordDTO;
@@ -19,6 +26,8 @@ import com.bridgelabz.webscraping.repository.UserRepository;
 import com.bridgelabz.webscraping.response.Response;
 import com.bridgelabz.webscraping.utility.EmailSenderService;
 import com.bridgelabz.webscraping.utility.JwtToken;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.sun.istack.logging.Logger;
 
 /**
@@ -98,6 +107,7 @@ public class UserServiceImp implements IUserService {
 		User user = userRepository.findByEmail(loginDTO.getEmail());
 		// generate the token
 		String token = jwtToken.generateToken(loginDTO.getEmail());
+		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid User");
 			return new Response(400, "Invalid user", false);
@@ -127,6 +137,7 @@ public class UserServiceImp implements IUserService {
 	public Response verifiedUser(String token) {
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
+		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid User");
 			return new Response(400, "Invalid user", false);
@@ -144,6 +155,7 @@ public class UserServiceImp implements IUserService {
 	@Override
 	public Response forgotPassword(ForgotPasswordDTO forgotPasswordDTO) {
 		User user = userRepository.findByEmail(forgotPasswordDTO.getEmail());
+		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid user");
 			return new Response(400, "Invalid user", false);
@@ -168,6 +180,7 @@ public class UserServiceImp implements IUserService {
 	public Response resetPassword(String token, ResetPasswordDTO resetPasswordDTO) {
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
+		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid user");
 			return new Response(400, "Invalid user", false);
@@ -204,6 +217,7 @@ public class UserServiceImp implements IUserService {
 	public Response deleteUser(String token, int id) {
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
+		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid user");
 			return new Response(400, "Invalid user", false);
@@ -215,5 +229,49 @@ public class UserServiceImp implements IUserService {
 		} else {
 			return new Response(400, "Invalid User", false);
 		}
+	}
+
+	/**
+	 * Uploading Image to User
+	 */
+	@Override
+	public Response uploadImage(String token, MultipartFile file) {
+		String email = jwtToken.getToken(token);
+		User user = userRepository.findByEmail(email);
+		// Check if user is present or not
+		if (user == null) {
+			LOGGER.warning("Invalid user");
+			return new Response(400, "Invalid user", false);
+		}
+		// file is empty or not
+		if (file.isEmpty())
+			return new Response(400, "File is Empty", false);
+		File uploadFile = new File(file.getOriginalFilename());
+		try {
+			BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(uploadFile));
+			try {
+				outputStream.write(file.getBytes());
+				outputStream.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		// Connection of close cloudinary properties
+		Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap("cloud_name", "dmlqjysiv", "api_key",
+				"242443158528625", "api_secret", "q9p9sxtwVI-kSM5CVt-Yrc4_B0c"));
+		Map<?, ?> uploadProfile;
+		try {
+			// this upload the image on cloudinary ->Query -> Mapped
+			uploadProfile = cloudinary.uploader().upload(uploadFile, ObjectUtils.emptyMap());
+		} catch (IOException e) {
+			return new Response(400, "File not uploaded", false);
+		}
+		// Set profile picture in url type in database
+		user.setProfilePic(uploadProfile.get("secure_url").toString());
+		userRepository.save(user);
+		LOGGER.info("Successfully uploaded the profile picture");
+		return new Response(200, "Uploaded Profile picture Successfully", true);
 	}
 }
