@@ -222,7 +222,7 @@ public class UserServiceImp implements IUserService {
 	 * delete particular user in database though user id
 	 */
 	@Override
-	public Response deleteUser(String token, int id) {
+	public Response deleteUser(String token, String id) {
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
 		// Check if user is present or not

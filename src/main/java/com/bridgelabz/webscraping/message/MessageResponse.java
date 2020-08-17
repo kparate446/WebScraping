@@ -8,7 +8,7 @@ public class MessageResponse {
 	public SimpleMailMessage verifyMail(String reciverEmail, String reciverName, String token) {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(reciverEmail);
-		message.setFrom("forgotbridge70@gmail.com");
+		message.setFrom("kparate03@gmail.com");
 		message.setSubject("Complete Verification!!!! ");
 		message.setText("token" + token);
 		return message;
