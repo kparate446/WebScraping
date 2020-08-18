@@ -42,20 +42,20 @@ public class UserController {
 	 * @return : Response
 	 */
 	@PostMapping("/register")
-	public ResponseEntity<String> adduser(@Valid @RequestBody RegistrationDTO registrationDTO) {
+	public ResponseEntity<String> addUser(@Valid @RequestBody RegistrationDTO registrationDTO) {
 		Response response = service.addUser(registrationDTO);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
 	}
 
 	/**
-	 * Purpose : Verification of user
+	 * Purpose : Validate of user
 	 * 
 	 * @param token : Verified the token
 	 * @return :- Response
 	 */
-	@PostMapping("/validation")
-	public ResponseEntity<String> verifiedUser(@RequestHeader String token) {
-		Response response = service.verifiedUser(token);
+	@PostMapping("/validateuser")
+	public ResponseEntity<String> validateUser(@RequestHeader String token) {
+		Response response = service.validateUser(token);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
 	}
 
@@ -113,20 +113,20 @@ public class UserController {
 	 * @param token  : Verified the user
 	 * @param userId : Person id
 	 */
-	@DeleteMapping("/deleteuser/{userId}")
-	public ResponseEntity<String> deleteUser(@RequestHeader String token, @PathVariable String userId) {
-		Response response = service.deleteUser(token, userId);
-		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
-	}
+//	@DeleteMapping("/deleteuser/{userId}")
+//	public ResponseEntity<String> deleteUser(@RequestHeader String token, @PathVariable int userId) {
+//		Response response = service.deleteUser(token, userId);
+//		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
+//	}
 
 	/**
 	 * @param token
 	 * @param file
 	 * @return
 	 */
-	@PostMapping("/uploadImage")
-	public ResponseEntity<String> uploadImage(@RequestHeader String token, @RequestHeader MultipartFile file) {
-		Response response = service.uploadImage(token, file);
+	@PostMapping("/uploadedprofile")
+	public ResponseEntity<String> uploadedProfile(@RequestHeader String token, @RequestHeader MultipartFile file) {
+		Response response = service.uploadedProfilePic(token, file);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
 	}
 }

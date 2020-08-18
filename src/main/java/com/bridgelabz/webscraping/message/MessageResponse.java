@@ -10,7 +10,7 @@ public class MessageResponse {
 		message.setTo(reciverEmail);
 		message.setFrom("kparate03@gmail.com");
 		message.setSubject("Complete Verification!!!! ");
-		message.setText("token" + token);
+		message.setText("Link "+"http://localhost:8080/user/validateuser/"+ token);
 		return message;
 	}
 }

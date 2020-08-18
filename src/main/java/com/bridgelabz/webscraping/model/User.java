@@ -17,7 +17,7 @@ public class User implements Serializable {
 
 	private static final long serialVersionUID = 3062820861321260332L;
 	@Id
-	private String id;
+	private int id;
 	private String firstName;
 	private String middleName;
 	private String lastName;
@@ -28,11 +28,12 @@ public class User implements Serializable {
 	private String profilePic;
 	private boolean isValidate = false;
 
-	public String getId() {
+	
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -110,8 +111,10 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName
-				+ ", email=" + email + ", password=" + password + ", date=" + date + ", phoneNo=" + phoneNo
-				+ ", profilePic=" + profilePic + ", isValidate=" + isValidate + "]";
+		return "User [firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName + ", email="
+				+ email + ", password=" + password + ", date=" + date + ", phoneNo=" + phoneNo + ", profilePic="
+				+ profilePic + ", isValidate=" + isValidate + "]";
 	}
+
+	
 }

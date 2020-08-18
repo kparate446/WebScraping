@@ -100,8 +100,8 @@ public class UserServiceImp implements IUserService {
 			userRepository.save(userData);
 			// Print token in console
 			System.out.println(token);
-			LOGGER.info("Registration puccessfully");
-			return new Response(200, "Registration successfully", token);
+			LOGGER.info("New user is successfully created");
+			return new Response(200, "New user is successfully created", token);
 		} else {
 			LOGGER.warning("Invalid password");
 			throw new InvalidPassword(messageData.Invalid_Password);
@@ -109,7 +109,7 @@ public class UserServiceImp implements IUserService {
 	}
 
 	/**
-	 * login user though email id or password
+	 * login user through email id or password
 	 */
 	@Override
 	public Response loginUser(LoginDTO loginDTO) {
@@ -126,9 +126,9 @@ public class UserServiceImp implements IUserService {
 			if (passConfig.encoder().matches(loginDTO.getPassword(), user.getPassword())) {
 				email = massageResponse.verifyMail(user.getEmail(), user.getFirstName(), token);
 				emailSender.sendEmail(email);
-				LOGGER.info("Login successfully");
+				LOGGER.info("You are Successfully Logged-in");
 				System.out.println(token);
-				return new Response(200, "Login successfully", token);
+				return new Response(200, "You are Successfully Logged-in", token);
 			} else {
 				LOGGER.warning("Invalid password");
 				throw new InvalidPassword(messageData.Invalid_Password);
@@ -143,7 +143,7 @@ public class UserServiceImp implements IUserService {
 	 * token user send verify token for checking for token is match or not
 	 */
 	@Override
-	public Response verifiedUser(String token) {
+	public Response validateUser(String token) {
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
 		// Check if user is present or not
@@ -153,8 +153,8 @@ public class UserServiceImp implements IUserService {
 		} else
 			user.setValidate(true);
 		userRepository.save(user);
-		LOGGER.info("Successfully verified user");
-		return new Response(200, "Successfully verified user", token);
+		LOGGER.info("Email is Verified Successfully");
+		return new Response(200, "Email is Verified Successfully", token);
 	}
 
 	/**
@@ -213,7 +213,7 @@ public class UserServiceImp implements IUserService {
 			throw new InvalidUser(messageData.Invalid_User);
 		} else {
 			List<User> users = userRepository.findAll();
-			LOGGER.info("Successfully showing the User table data");
+			LOGGER.info("Successfully showing the User list data");
 			return new Response(200, "Show all users", users);
 		}
 	}
@@ -221,29 +221,29 @@ public class UserServiceImp implements IUserService {
 	/**
 	 * delete particular user in database though user id
 	 */
-	@Override
-	public Response deleteUser(String token, String id) {
-		String email = jwtToken.getToken(token);
-		User user = userRepository.findByEmail(email);
-		// Check if user is present or not
-		if (user == null) {
-			LOGGER.warning("Invalid user");
-			throw new InvalidUser(messageData.Invalid_User);
-		}
-		if (id == user.getId()) {
-			userRepository.deleteById(id);
-			LOGGER.info("Successfully deleted user");
-			return new Response(200, "Successfully deleted user", true);
-		} else {
-			throw new InvalidUser(messageData.Invalid_User);
-		}
-	}
+//	@Override
+//	public Response deleteUser(String token, int id) {
+//		String email = jwtToken.getToken(token);
+//		User user = userRepository.findByEmail(email);
+//		// Check if user is present or not
+//		if (user == null) {
+//			LOGGER.warning("Invalid user");
+//			throw new InvalidUser(messageData.Invalid_User);
+//		}
+////		if (id == user.getId()) {
+//			userRepository.deleteById(id);
+//			LOGGER.info("Successfully deleted user");
+//			return new Response(200, "Successfully deleted user", true);
+//		} else {
+//			throw new InvalidUser(messageData.Invalid_User);
+//		}
+//	}
 
 	/**
 	 * Uploading Image to User
 	 */
 	@Override
-	public Response uploadImage(String token, MultipartFile file) {
+	public Response uploadedProfilePic(String token, MultipartFile file) {
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
 		// Check if user is present or not
@@ -280,6 +280,6 @@ public class UserServiceImp implements IUserService {
 		user.setProfilePic(uploadProfile.get("secure_url").toString());
 		userRepository.save(user);
 		LOGGER.info("Successfully uploaded the profile picture");
-		return new Response(200, "Uploaded Profile picture Successfully", true);
+		return new Response(200, "Successfully Uploaded Profile picture", true);
 	}
 }

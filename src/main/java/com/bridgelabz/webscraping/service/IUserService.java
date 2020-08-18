@@ -17,7 +17,7 @@ import com.bridgelabz.webscraping.response.Response;
 public interface IUserService {
 	Response addUser(RegistrationDTO registrationDTO);
 
-	Response verifiedUser(String token);
+	Response validateUser(String token);
 
 	Response loginUser(LoginDTO loginDTO);
 
@@ -27,7 +27,7 @@ public interface IUserService {
 
 	Response getAllUsers();
 
-	Response deleteUser(String token, String id);
+//	Response deleteUser(String token, int id);
 
-	Response uploadImage(String token, MultipartFile file);
+	Response uploadedProfilePic(String token, MultipartFile file);
 }
