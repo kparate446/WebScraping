@@ -13,25 +13,25 @@ import javax.validation.constraints.Pattern;
  * @since 14-09-2020
  */
 public class RegistrationDTO {
-//	@Valid
-//	@NotBlank(message = "First Name is mandatory")
+	@Valid
+	@NotBlank(message = "First Name is mandatory")
 	private String firstName;
 
-//	@NotBlank(message = "Middle Name is mandatory")
+	@NotBlank(message = "Middle Name is mandatory")
 	private String middleName;
 
-//	@NotBlank(message = "Last Name is mandatory")
+	@NotBlank(message = "Last Name is mandatory")
 	private String lastName;
 
-//	@NotBlank
-//	@Email(message = "Email should be valid")
+	@NotBlank
+	@Email(message = "Email should be valid")
 	private String email;
 
-//	@NotBlank(message = "Phone number is mandatory")
-//	@Pattern(regexp = "^[0-9]*$")
+	@NotBlank(message = "Phone number is mandatory")
+	@Pattern(regexp = "^[0-9]*$")
 	private long phoneNo;
 
-//	@NotBlank(message = "Password is mandatory")
+	@NotBlank(message = "Password is mandatory")
 	private String password;
 	private String cofirmPasword;
 

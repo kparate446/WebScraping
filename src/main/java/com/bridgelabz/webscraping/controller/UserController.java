@@ -113,11 +113,11 @@ public class UserController {
 	 * @param token  : Verified the user
 	 * @param userId : Person id
 	 */
-//	@DeleteMapping("/deleteuser/{userId}")
-//	public ResponseEntity<String> deleteUser(@RequestHeader String token, @PathVariable int userId) {
-//		Response response = service.deleteUser(token, userId);
-//		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
-//	}
+	@DeleteMapping("/deleteuser/{userId}")
+	public ResponseEntity<String> deleteUser(@RequestHeader String token, @PathVariable int userId) {
+		Response response = service.deleteUser(token, userId);
+		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
+	}
 
 	/**
 	 * @param token
