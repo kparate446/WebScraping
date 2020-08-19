@@ -27,7 +27,7 @@ public interface IUserService {
 
 	Response getAllUsers();
 
-	Response deleteUser(String token, int id);
+	Response deleteUser(String token, String id);
 
 	Response uploadedProfilePic(String token, MultipartFile file);
 }

@@ -1,9 +1,11 @@
 package com.bridgelabz.webscraping.model;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -13,11 +15,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * @since 14-09-2020
  */
 @Document(collection = "userDetails")
-public class User implements Serializable {
-
-	private static final long serialVersionUID = 3062820861321260332L;
+public class User {
 	@Id
-	private int id;
+	private String id;
 	private String firstName;
 	private String middleName;
 	private String lastName;
@@ -28,12 +28,23 @@ public class User implements Serializable {
 	private String profilePic;
 	private boolean isValidate = false;
 
-	
-	public int getId() {
+	// this list use for relationship between User and UserScrappedSite
+	@DBRef
+	private List<UserScrappedSite> scrap = new ArrayList<UserScrappedSite>();
+
+	public List<UserScrappedSite> getScrap() {
+		return scrap;
+	}
+
+	public void setScrap(List<UserScrappedSite> scrap) {
+		this.scrap = scrap;
+	}
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -115,6 +126,4 @@ public class User implements Serializable {
 				+ email + ", password=" + password + ", date=" + date + ", phoneNo=" + phoneNo + ", profilePic="
 				+ profilePic + ", isValidate=" + isValidate + "]";
 	}
-
-	
 }

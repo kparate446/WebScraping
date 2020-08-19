@@ -145,13 +145,16 @@ public class UserServiceImp implements IUserService {
 	@Override
 	public Response validateUser(String token) {
 		String email = jwtToken.getToken(token);
+		System.out.println(email);
 		User user = userRepository.findByEmail(email);
+		System.out.println(user);
 		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid User");
 			throw new InvalidUser(messageData.Invalid_User);
 		} else
 			user.setValidate(true);
+		System.out.println(user);
 		userRepository.save(user);
 		LOGGER.info("Email is Verified Successfully");
 		return new Response(200, "Email is Verified Successfully", token);
@@ -222,7 +225,7 @@ public class UserServiceImp implements IUserService {
 	 * delete particular user in database though user id
 	 */
 	@Override
-	public Response deleteUser(String token, int id) {
+	public Response deleteUser(String token, String id) {
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
 		// Check if user is present or not

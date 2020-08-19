@@ -41,7 +41,7 @@ public class UserController {
 	 * @param registrationDTO
 	 * @return : Response
 	 */
-	@PostMapping("/register")
+	@PostMapping("/register/{registrationDTO}")
 	public ResponseEntity<String> addUser(@Valid @RequestBody RegistrationDTO registrationDTO) {
 		Response response = service.addUser(registrationDTO);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
@@ -53,7 +53,7 @@ public class UserController {
 	 * @param token : Verified the token
 	 * @return :- Response
 	 */
-	@PostMapping("/validateuser")
+	@PostMapping("/validateuser/{token}")
 	public ResponseEntity<String> validateUser(@RequestHeader String token) {
 		Response response = service.validateUser(token);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
@@ -65,7 +65,7 @@ public class UserController {
 	 * @param loginDTO
 	 * @return : Response
 	 */
-	@PostMapping("/login")
+	@PostMapping("/login/{loginDTO}")
 	public ResponseEntity<Response> login(@Valid @RequestBody LoginDTO loginDTO) {
 		Response response = service.loginUser(loginDTO);
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
@@ -77,7 +77,7 @@ public class UserController {
 	 * @param forgotPasswordDTO
 	 * @return :response
 	 */
-	@PostMapping("/forgotpassword")
+	@PostMapping("/forgotpassword/{forgotPasswordDTO}")
 	public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordDTO forgotPasswordDTO) {
 		Response response = service.forgotPassword(forgotPasswordDTO);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
@@ -90,7 +90,7 @@ public class UserController {
 	 * @param resetPasswordDTO : Access the resetPasswordDTO Data
 	 * @return : Response
 	 */
-	@PutMapping("/resetpassword")
+	@PutMapping("/resetpassword/{token}/{resetPasswordDTO}")
 	public ResponseEntity<String> resetpassword(@RequestHeader String token, ResetPasswordDTO resetPasswordDTO) {
 		Response response = service.resetPassword(token, resetPasswordDTO);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
@@ -105,7 +105,7 @@ public class UserController {
 	public ResponseEntity<Response> getAllUsers() {
 		Response response = service.getAllUsers();
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
-	}
+	}	
 
 	/**
 	 * Purpose : Deleted user
@@ -114,17 +114,17 @@ public class UserController {
 	 * @param userId : Person id
 	 */
 	@DeleteMapping("/deleteuser/{userId}")
-	public ResponseEntity<String> deleteUser(@RequestHeader String token, @PathVariable int userId) {
+	public ResponseEntity<String> deleteUser(@RequestHeader String token, @PathVariable String userId) {
 		Response response = service.deleteUser(token, userId);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
 	}
 
 	/**
-	 * @param token
-	 * @param file
-	 * @return
+	 * @param token : Verified the user
+	 * @param file : Which file to uploaded
+	 * @return : Response
 	 */
-	@PostMapping("/uploadedprofile")
+	@PostMapping("/uploadedprofile/{token}/{file}")
 	public ResponseEntity<String> uploadedProfile(@RequestHeader String token, @RequestHeader MultipartFile file) {
 		Response response = service.uploadedProfilePic(token, file);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
