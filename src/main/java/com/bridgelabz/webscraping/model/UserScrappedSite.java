@@ -1,6 +1,7 @@
 package com.bridgelabz.webscraping.model;
 
 import java.time.LocalDateTime;
+import java.util.StringJoiner;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,7 +11,7 @@ public class UserScrappedSite {
 	@Id
 	private String id;
 	private LocalDateTime date = LocalDateTime.now();
-	private String websiteName;
+	private StringJoiner websiteName;
 	private String email;
 	private String userId;
 
@@ -30,12 +31,12 @@ public class UserScrappedSite {
 		this.date = date;
 	}
 
-	public String getWebsiteName() {
+	public StringJoiner getWebsiteName() {
 		return websiteName;
 	}
 
-	public void setWebsiteName(String websiteName) {
-		this.websiteName = websiteName;
+	public void setWebsiteName(StringJoiner joiner) {
+		this.websiteName = joiner;
 	}
 
 	public String getEmail() {

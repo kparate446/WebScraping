@@ -145,16 +145,13 @@ public class UserServiceImp implements IUserService {
 	@Override
 	public Response validateUser(String token) {
 		String email = jwtToken.getToken(token);
-		System.out.println(email);
 		User user = userRepository.findByEmail(email);
-		System.out.println(user);
 		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid User");
 			throw new InvalidUser(messageData.Invalid_User);
 		} else
 			user.setValidate(true);
-		System.out.println(user);
 		userRepository.save(user);
 		LOGGER.info("Email is Verified Successfully");
 		return new Response(200, "Email is Verified Successfully", token);

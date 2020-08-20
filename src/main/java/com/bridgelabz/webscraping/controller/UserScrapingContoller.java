@@ -3,6 +3,7 @@ package com.bridgelabz.webscraping.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,13 +27,28 @@ public class UserScrapingContoller {
 	 * Purpose : Scraping websites using Jsoup and inserting data into databases
 	 * using PdfBox (e.g .pdf, .html and .csv format)
 	 * 
+	 * @param token : Verified the user
 	 * @param url : Which website to scrapped
 	 * @return : Response
 	 * @throws Exception
 	 */
-	@PostMapping("/addwebscripe{url}")
-	public ResponseEntity<String> addWebScraping(String url) throws Exception {
-		Response response = service.addScrappedSite(url);
+	@PostMapping("/addwebscripe/{token}/{url}")
+	public ResponseEntity<String> addWebScraping(String token, String url) throws Exception {
+		Response response = service.addScrappedSite(token, url);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
 	}
+	
+	/**
+	 * Purpose : Getting all Web Scraping data details
+	 * 
+	 * @param token : Verified the user
+	 * @param fileName
+	 * @return : Response
+	 * @throws Exception
+	 */
+	@GetMapping("/getwebscripe/{token}/{fileName}")
+	public ResponseEntity<Response> getWebScripeData(String token, String fileName) throws Exception {
+		Response response = service.getWebScrapingData(token, fileName);
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
+	}	
 }
