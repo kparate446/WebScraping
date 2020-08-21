@@ -65,21 +65,15 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 			LOGGER.warning("Invalid user");
 			throw new InvalidUser(messageData.Invalid_User);
 		}
-		int row = 0;
 		Document doc = Jsoup.connect(url).get();
-		List<String> list = new ArrayList<String>();
 		StringJoiner joiner = new StringJoiner(",");
 		for (Element table : doc.getElementsByTag("table")) {
 			for (Element trElement : table.getElementsByTag("tr")) {
-				row = row + 1;
 				for (Element tdElement : trElement.getElementsByTag("th")) {
 					joiner.add(tdElement.text());
-					list.add(tdElement.text());
-
 				}
 				for (Element element : trElement.getElementsByTag("td")) {
 					joiner.add(element.text());
-					list.add(element.text());
 				}
 			}
 		}
@@ -155,16 +149,23 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 				document.close();
 			}
 		}
-		return new Response(200, "Successfully Scrapped data", true);
+		return new Response(200, "PDF is successfully created", true);
 	}
 
 	/**
 	 * Getting all Web Scraping data details
 	 */
 	@Override
-	public Response getWebScrapingData(String token, String fileName) throws Exception {
+	public Response getWebScrapingData(String token, String filePath) throws Exception {
+		String email = jwtToken.getToken(token);
+		User user = userRepository.findByEmail(email);
+		// Check if user is present or not
+		if (user == null) {
+			LOGGER.warning("Invalid user");
+			throw new InvalidUser(messageData.Invalid_User);
+		}
 		// We load a PDF document from the src/main/resources directory
-		File myFile = new File(fileName);
+		File myFile = new File(filePath);
 		String text;
 		try (PDDocument doc = PDDocument.load(myFile)) {
 			// PDFTextStripper is used to extract text from the PDF file.
