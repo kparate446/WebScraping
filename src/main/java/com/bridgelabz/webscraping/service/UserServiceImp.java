@@ -92,7 +92,8 @@ public class UserServiceImp implements IUserService {
 		// To generate the Token
 		String token = jwtToken.generateToken(userData.getEmail());
 		// Send the token in email
-		email = massageResponse.verifyMail(userData.getEmail(), userData.getFirstName(), token);
+		email = massageResponse.verifyMail(userData.getEmail(), token,
+				"\t Validate your email \n" + "http://localhost:8080/validate?token=");
 		emailSender.sendEmail(email);
 		if (registrationDTO.getPassword().equals(registrationDTO.getCofirmPasword())) {
 			// Encoded the password stored in database
@@ -124,7 +125,8 @@ public class UserServiceImp implements IUserService {
 		if (user.isValidate()) {
 			// decode the password
 			if (passConfig.encoder().matches(loginDTO.getPassword(), user.getPassword())) {
-				email = massageResponse.verifyMail(user.getEmail(), user.getFirstName(), token);
+				email = massageResponse.verifyMail(loginDTO.getEmail(), token,
+						"\t Logged-In user \n" + "token=");
 				emailSender.sendEmail(email);
 				LOGGER.info("You are Successfully Logged-in");
 				System.out.println(token);
@@ -171,8 +173,10 @@ public class UserServiceImp implements IUserService {
 		}
 		if (user.isValidate()) {
 			String token = jwtToken.generateToken(forgotPasswordDTO.getEmail());
-			email = massageResponse.verifyMail(user.getEmail(), user.getFirstName(), token);
+			email = massageResponse.verifyMail(forgotPasswordDTO.getEmail(), token,
+					"\t Forgot password \n" + "http://localhost:4200/resetpassword");
 			emailSender.sendEmail(email);
+
 			userRepository.save(user);
 			System.out.println(token);
 			LOGGER.info("Sent the token in mail");

@@ -80,7 +80,7 @@ public class UserController {
 	 * @param forgotPasswordDTO
 	 * @return :response
 	 */
-	@PostMapping("/forgotpassword/{forgotPasswordDTO}")
+	@PostMapping("/forgotpassword")
 	public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordDTO forgotPasswordDTO) {
 		Response response = service.forgotPassword(forgotPasswordDTO);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
@@ -93,7 +93,7 @@ public class UserController {
 	 * @param resetPasswordDTO : Access the resetPasswordDTO Data
 	 * @return : Response
 	 */
-	@PutMapping("/resetpassword/{token}/{resetPasswordDTO}")
+	@PutMapping("/resetpassword")
 	public ResponseEntity<String> resetpassword(@RequestHeader String token, ResetPasswordDTO resetPasswordDTO) {
 		Response response = service.resetPassword(token, resetPasswordDTO);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
