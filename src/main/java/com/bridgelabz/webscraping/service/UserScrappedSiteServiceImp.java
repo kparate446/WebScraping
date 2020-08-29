@@ -17,6 +17,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +50,9 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 
 	@Autowired
 	private JwtToken jwtToken;
+	
+	@Autowired
+	private ModelMapper mapper;
 
 	private static final Logger LOGGER = Logger.getLogger(UserServiceImp.class);
 
@@ -57,7 +61,7 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 	 * (e.g .pdf, .html and .csv format)
 	 */
 	@Override
-	public Response addScrappedSite(String token, String url) throws Exception {
+	public Response addScrappedSite(String token, String url, String format) throws Exception {
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
 		// Check if user is present or not
@@ -100,7 +104,8 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 			float startY = mediabox.getUpperRightY() - marginY;
 
 			// The text is written with showText() method
-			String text = joiner.toString();
+//			String text = joiner.toString();
+			String text = "dflgkjjfdjfgbfdjhjxdzjfhgfdhfghdfhgdfhghdfhghdsdfjhgfjldlkhgjlhk";
 			List<String> lines = new ArrayList<String>();
 			int lastSpace = -1;
 			while (text.length() > 0) {
@@ -143,7 +148,17 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss");
 			LocalDateTime now = LocalDateTime.now();
-			document.save(new File("C:\\Users\\HP\\Desktop\\ScrapingData\\MultipleFile" + dtf.format(now) + ".pdf"));
+			String pdf = null, csv = null, html = null;
+			if (format.equals(pdf)) {
+				document.save(
+						new File("C:\\Users\\HP\\Desktop\\ScrapingData\\PdfFile" + dtf.format(now) + ".pdf"));
+			} else if (format.equals(csv)) {
+				document.save(
+						new File("C:\\Users\\HP\\Desktop\\ScrapingData\\CsvFile" + dtf.format(now) + ".csv"));
+			} else if (format.equals(html)) {
+				document.save(
+						new File("C:\\Users\\HP\\Desktop\\ScrapingData\\HtmlFile" + dtf.format(now) + ".html"));
+			}
 		} finally {
 			if (doc != null) {
 				document.close();

@@ -44,7 +44,7 @@ public class UserController {
 	 * @param registrationDTO
 	 * @return : Response
 	 */
-	@PostMapping("/register/{registrationDTO}")
+	@PostMapping("/register")
 	public ResponseEntity<String> addUser(@Valid @RequestBody RegistrationDTO registrationDTO) {
 		Response response = service.addUser(registrationDTO);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
