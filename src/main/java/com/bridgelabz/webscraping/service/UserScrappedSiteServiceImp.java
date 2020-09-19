@@ -17,14 +17,15 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.webscraping.exception.InvalidUser;
 import com.bridgelabz.webscraping.message.MessageData;
 import com.bridgelabz.webscraping.model.User;
+import com.bridgelabz.webscraping.model.UserScrappedSite;
 import com.bridgelabz.webscraping.repository.UserRepository;
+import com.bridgelabz.webscraping.repository.UserScrappedSiteRepository;
 import com.bridgelabz.webscraping.response.Response;
 import com.bridgelabz.webscraping.utility.JwtToken;
 import com.sun.istack.logging.Logger;
@@ -43,6 +44,9 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 	UserRepository userRepository;
 
 	@Autowired
+	UserScrappedSiteRepository userScrappedSiteRepository;
+
+	@Autowired
 	Response response;
 
 	@Autowired
@@ -50,9 +54,6 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 
 	@Autowired
 	private JwtToken jwtToken;
-	
-	@Autowired
-	private ModelMapper mapper;
 
 	private static final Logger LOGGER = Logger.getLogger(UserServiceImp.class);
 
@@ -61,7 +62,8 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 	 * (e.g .pdf, .html and .csv format)
 	 */
 	@Override
-	public Response addScrappedSite(String token, String url, String format) throws Exception {
+	public Response addScrappedSite(String url, String format, String token) throws Exception {
+		System.out.println("Format--->" + format);
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
 		// Check if user is present or not
@@ -104,8 +106,9 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 			float startY = mediabox.getUpperRightY() - marginY;
 
 			// The text is written with showText() method
-//			String text = joiner.toString();
-			String text = "dflgkjjfdjfgbfdjhjxdzjfhgfdhfghdfhgdfhghdfhghdsdfjhgfjldlkhgjlhk";
+			String text2 = joiner.toString();
+			String text = text2;
+			System.out.println("text ------->" + text);
 			List<String> lines = new ArrayList<String>();
 			int lastSpace = -1;
 			while (text.length() > 0) {
@@ -128,7 +131,7 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 					lastSpace = spaceIndex;
 				}
 			}
-			// Text is written betweeen beginText() methods.
+			// Text is written between beginText() methods.
 			contentStream.beginText();
 			// We set the font and text leading.
 			contentStream.setFont(pdfFont, fontSize);
@@ -140,7 +143,7 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 				// With the newLine() method, we move to the start of the next line of text
 				contentStream.newLineAtOffset(0, -leading);
 			}
-			// Text is written betweeen endText() methods.
+			// Text is written between endText() methods.
 			contentStream.endText();
 			// Stream must be closed before saving document.
 			contentStream.close();
@@ -148,16 +151,39 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss");
 			LocalDateTime now = LocalDateTime.now();
-			String pdf = null, csv = null, html = null;
+
+			UserScrappedSite userScrappedSite = new UserScrappedSite();
+			String pdf = "pdf", csv = "csv", html = "html";
 			if (format.equals(pdf)) {
-				document.save(
-						new File("C:\\Users\\HP\\Desktop\\ScrapingData\\PdfFile" + dtf.format(now) + ".pdf"));
+				String data = "C:\\Users\\HP\\Desktop\\ScrapingData\\PdfFile" + dtf.format(now) + ".pdf";
+				document.save(new File(data));
+				// Set data in database
+				userScrappedSite.setWebsiteName(url);
+				userScrappedSite.setEmail(email);
+				LocalDateTime date = LocalDateTime.now();
+				userScrappedSite.setDate(date);
+				userScrappedSite.setUserId(user.getId());
+				userScrappedSiteRepository.save(userScrappedSite);
 			} else if (format.equals(csv)) {
-				document.save(
-						new File("C:\\Users\\HP\\Desktop\\ScrapingData\\CsvFile" + dtf.format(now) + ".csv"));
+				String data = "C:\\Users\\HP\\Desktop\\ScrapingData\\CSVFile" + dtf.format(now) + ".csv";
+				document.save(new File(data));
+				// Set data in database
+				userScrappedSite.setWebsiteName(url);
+				userScrappedSite.setEmail(email);
+				LocalDateTime date = LocalDateTime.now();
+				userScrappedSite.setDate(date);
+				userScrappedSite.setUserId(user.getId());
+				userScrappedSiteRepository.save(userScrappedSite);
 			} else if (format.equals(html)) {
-				document.save(
-						new File("C:\\Users\\HP\\Desktop\\ScrapingData\\HtmlFile" + dtf.format(now) + ".html"));
+				String data = "C:\\Users\\HP\\Desktop\\ScrapingData\\HtmlFile" + dtf.format(now) + ".html";
+				document.save(new File(data));
+				// Set data in database
+				userScrappedSite.setWebsiteName(url);
+				userScrappedSite.setEmail(email);
+				LocalDateTime date = LocalDateTime.now();
+				userScrappedSite.setDate(date);
+				userScrappedSite.setUserId(user.getId());
+				userScrappedSiteRepository.save(userScrappedSite);
 			}
 		} finally {
 			if (doc != null) {
@@ -171,7 +197,9 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 	 * Getting all Web Scraping data details
 	 */
 	@Override
-	public Response getWebScrapingData(String token, String filePath) throws Exception {
+	public Response getWebScrapingData(String filePath, String token) throws Exception {
+		System.out.println("filepath ---> " + filePath);
+		System.out.println("token--->" + token);
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
 		// Check if user is present or not

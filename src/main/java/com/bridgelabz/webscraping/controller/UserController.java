@@ -30,7 +30,6 @@ import com.bridgelabz.webscraping.service.IUserService;
  * @author Krunal Parate
  * @since 14-08-2020
  */
-//@CrossOrigin(origins ="*", maxAge = 3600)
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/user")

@@ -1,19 +1,17 @@
 package com.bridgelabz.webscraping.dto;
 
-import java.time.LocalDateTime;
-
 public class AddWebscrapingDTO {
-	private LocalDateTime date = LocalDateTime.now();
+//	private LocalDateTime date = LocalDateTime.now();
 	private String websiteName;
 	private String email;
 
-	public LocalDateTime getDate() {
-		return date;
-	}
-
-	public void setDate(LocalDateTime date) {
-		this.date = date;
-	}
+//	public LocalDateTime getDate() {
+//		return date;
+//	}
+//
+//	public void setDate(LocalDateTime date) {
+//		this.date = date;
+//	}
 
 	public String getWebsiteName() {
 		return websiteName;
@@ -33,6 +31,6 @@ public class AddWebscrapingDTO {
 
 	@Override
 	public String toString() {
-		return "AddWebscrapingDTO [date=" + date + ", websiteName=" + websiteName + ", email=" + email + "]";
+		return "AddWebscrapingDTO [websiteName=" + websiteName + ", email=" + email + "]";
 	}
 }

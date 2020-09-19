@@ -125,8 +125,7 @@ public class UserServiceImp implements IUserService {
 		if (user.isValidate()) {
 			// decode the password
 			if (passConfig.encoder().matches(loginDTO.getPassword(), user.getPassword())) {
-				email = massageResponse.verifyMail(loginDTO.getEmail(), token,
-						"\t Logged-In user \n" + "token=");
+				email = massageResponse.verifyMail(loginDTO.getEmail(), token, "\t Logged-In user \n" + "token=");
 				emailSender.sendEmail(email);
 				LOGGER.info("You are Successfully Logged-in");
 				System.out.println(token);
@@ -176,7 +175,6 @@ public class UserServiceImp implements IUserService {
 			email = massageResponse.verifyMail(forgotPasswordDTO.getEmail(), token,
 					"\t Forgot password \n" + "http://localhost:4200/resetpassword");
 			emailSender.sendEmail(email);
-
 			userRepository.save(user);
 			System.out.println(token);
 			LOGGER.info("Sent the token in mail");
