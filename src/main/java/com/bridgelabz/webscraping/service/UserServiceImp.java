@@ -125,10 +125,7 @@ public class UserServiceImp implements IUserService {
 		if (user.isValidate()) {
 			// decode the password
 			if (passConfig.encoder().matches(loginDTO.getPassword(), user.getPassword())) {
-				email = massageResponse.verifyMail(loginDTO.getEmail(), token, "\t Logged-In user \n" + "token=");
-				emailSender.sendEmail(email);
 				LOGGER.info("You are Successfully Logged-in");
-				System.out.println(token);
 				return new Response(200, "You are Successfully Logged-in", token);
 			} else {
 				LOGGER.warning("Invalid password");

@@ -66,20 +66,36 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 		System.out.println("Format--->" + format);
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
+		String pdf = "pdf", csv = "csv", html = "html";
 		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid user");
 			throw new InvalidUser(messageData.Invalid_User);
 		}
+		// Document object represents the HTML DOM & Jsoup is the main class to connect
+		// the url and get the HTML String.
 		Document doc = Jsoup.connect(url).get();
-		StringJoiner joiner = new StringJoiner(",");
-		for (Element table : doc.getElementsByTag("table")) {
-			for (Element trElement : table.getElementsByTag("tr")) {
-				for (Element tdElement : trElement.getElementsByTag("th")) {
-					joiner.add(tdElement.text());
+		StringJoiner joiner = new StringJoiner("");
+		if (format.equals(pdf) || format.equals(csv)) {
+			for (Element table : doc.getElementsByTag("table")) {
+				for (Element trElement : table.getElementsByTag("tr")) {
+					for (Element tdElement : trElement.getElementsByTag("th")) {
+						joiner.add(tdElement.text());
+					}
+					for (Element element : trElement.getElementsByTag("td")) {
+						joiner.add(element.text());
+					}
 				}
-				for (Element element : trElement.getElementsByTag("td")) {
-					joiner.add(element.text());
+			}
+		} else if (format.equals(html)) {
+			for (Element table : doc.getElementsByTag("table")) {
+				for (Element trElement : table.getElementsByTag("tr")) {
+					for (Element tdElement : trElement.getElementsByTag("th")) {
+						joiner.add(tdElement.html());
+					}
+					for (Element element : trElement.getElementsByTag("td")) {
+						joiner.add(element.html());
+					}
 				}
 			}
 		}
@@ -108,7 +124,6 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 			// The text is written with showText() method
 			String text2 = joiner.toString();
 			String text = text2;
-			System.out.println("text ------->" + text);
 			List<String> lines = new ArrayList<String>();
 			int lastSpace = -1;
 			while (text.length() > 0) {
@@ -147,44 +162,28 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 			contentStream.endText();
 			// Stream must be closed before saving document.
 			contentStream.close();
-			System.out.println("PDF is successfully created");
-
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss");
 			LocalDateTime now = LocalDateTime.now();
 
-			UserScrappedSite userScrappedSite = new UserScrappedSite();
-			String pdf = "pdf", csv = "csv", html = "html";
 			if (format.equals(pdf)) {
 				String data = "C:\\Users\\HP\\Desktop\\ScrapingData\\PdfFile" + dtf.format(now) + ".pdf";
 				document.save(new File(data));
-				// Set data in database
-				userScrappedSite.setWebsiteName(url);
-				userScrappedSite.setEmail(email);
-				LocalDateTime date = LocalDateTime.now();
-				userScrappedSite.setDate(date);
-				userScrappedSite.setUserId(user.getId());
-				userScrappedSiteRepository.save(userScrappedSite);
 			} else if (format.equals(csv)) {
 				String data = "C:\\Users\\HP\\Desktop\\ScrapingData\\CSVFile" + dtf.format(now) + ".csv";
 				document.save(new File(data));
-				// Set data in database
-				userScrappedSite.setWebsiteName(url);
-				userScrappedSite.setEmail(email);
-				LocalDateTime date = LocalDateTime.now();
-				userScrappedSite.setDate(date);
-				userScrappedSite.setUserId(user.getId());
-				userScrappedSiteRepository.save(userScrappedSite);
 			} else if (format.equals(html)) {
 				String data = "C:\\Users\\HP\\Desktop\\ScrapingData\\HtmlFile" + dtf.format(now) + ".html";
 				document.save(new File(data));
-				// Set data in database
-				userScrappedSite.setWebsiteName(url);
-				userScrappedSite.setEmail(email);
-				LocalDateTime date = LocalDateTime.now();
-				userScrappedSite.setDate(date);
-				userScrappedSite.setUserId(user.getId());
-				userScrappedSiteRepository.save(userScrappedSite);
 			}
+			// Set data in database
+			UserScrappedSite userScrappedSite = new UserScrappedSite();
+			userScrappedSite.setWebsiteName(url);
+			userScrappedSite.setEmail(email);
+			userScrappedSite.setDate(now);
+			userScrappedSite.setUserId(user.getId());
+			userScrappedSiteRepository.save(userScrappedSite);
+			System.out.println("PDF is successfully created");
+			LOGGER.info("Successfully showing the scrapped data");
 		} finally {
 			if (doc != null) {
 				document.close();
@@ -216,6 +215,7 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 			text = stripper.getText(doc);
 			System.out.println(text);
 		}
+		LOGGER.info("Successfully showing the scrapped data");
 		return new Response(200, "Successfully showing the scrapped data", text);
 	}
 }
