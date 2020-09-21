@@ -13,6 +13,7 @@ public class UserScrappedSite {
 	private String websiteName;
 	private String email;
 	private String userId;
+	private String format;
 
 	public String getId() {
 		return id;
@@ -54,9 +55,17 @@ public class UserScrappedSite {
 		this.userId = userId;
 	}
 
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
 	@Override
 	public String toString() {
 		return "UserScrappedSite [id=" + id + ", date=" + date + ", websiteName=" + websiteName + ", email=" + email
-				+ ", userId=" + userId + "]";
+				+ ", userId=" + userId + ", format=" + format + "]";
 	}
 }

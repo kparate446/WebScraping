@@ -122,7 +122,7 @@ public class UserServiceImp implements IUserService {
 			LOGGER.warning("Invalid User");
 			throw new InvalidUser(messageData.Invalid_User);
 		}
-		if (user.isValidate()) {
+//		if (user.isValidate()) {
 			// decode the password
 			if (passConfig.encoder().matches(loginDTO.getPassword(), user.getPassword())) {
 				LOGGER.info("You are Successfully Logged-in");
@@ -131,10 +131,10 @@ public class UserServiceImp implements IUserService {
 				LOGGER.warning("Invalid password");
 				throw new InvalidPassword(messageData.Invalid_Password);
 			}
-		} else {
-			LOGGER.warning("Not Valid");
-			throw new InvalidUser(messageData.Invalid_User);
-		}
+//		} else {
+//			LOGGER.warning("Not Valid");
+//			throw new InvalidUser(messageData.Invalid_User);
+//		}
 	}
 
 	/**

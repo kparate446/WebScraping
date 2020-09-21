@@ -1,6 +1,5 @@
 package com.bridgelabz.webscraping.dto;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -13,7 +12,6 @@ import javax.validation.constraints.Pattern;
  * @since 14-09-2020
  */
 public class RegistrationDTO {
-	@Valid
 	@NotBlank(message = "First Name is mandatory")
 	private String firstName;
 

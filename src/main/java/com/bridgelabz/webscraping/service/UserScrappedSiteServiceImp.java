@@ -1,11 +1,13 @@
 package com.bridgelabz.webscraping.service;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -63,10 +65,12 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 	 */
 	@Override
 	public Response addScrappedSite(String url, String format, String token) throws Exception {
-		System.out.println("Format--->" + format);
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
 		String pdf = "pdf", csv = "csv", html = "html";
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss");
+		LocalDateTime now = LocalDateTime.now();
+
 		// Check if user is present or not
 		if (user == null) {
 			LOGGER.warning("Invalid user");
@@ -76,6 +80,7 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 		// the url and get the HTML String.
 		Document doc = Jsoup.connect(url).get();
 		StringJoiner joiner = new StringJoiner("");
+		StringJoiner joinerdata = new StringJoiner("");
 		if (format.equals(pdf) || format.equals(csv)) {
 			for (Element table : doc.getElementsByTag("table")) {
 				for (Element trElement : table.getElementsByTag("tr")) {
@@ -91,105 +96,119 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 			for (Element table : doc.getElementsByTag("table")) {
 				for (Element trElement : table.getElementsByTag("tr")) {
 					for (Element tdElement : trElement.getElementsByTag("th")) {
-						joiner.add(tdElement.html());
+						joinerdata.add(tdElement.html());
 					}
 					for (Element element : trElement.getElementsByTag("td")) {
-						joiner.add(element.html());
+						joinerdata.add(element.html());
 					}
 				}
 			}
-		}
-		System.out.println(joiner.toString());
-		// A new PDDocument is created. By default, the document has an A4 format.
-		PDDocument document = null;
-		try {
-			document = new PDDocument();
-			// A new page is created and added to the document
-			PDPage page = new PDPage();
-			document.addPage(page);
-			// To write to a PDF page, we have to create a PDPageContentStream object
-			PDPageContentStream contentStream = new PDPageContentStream(document, page);
-
-			PDFont pdfFont = PDType1Font.TIMES_ITALIC;
-			float fontSize = 11;
-			float leading = 1.5f * fontSize;
-
-			PDRectangle mediabox = page.getMediaBox();
-			float marginX = 80;
-			float marginY = 60;
-			float width = mediabox.getWidth() - 2 * marginX;
-			float startX = mediabox.getLowerLeftX() + marginX;
-			float startY = mediabox.getUpperRightY() - marginY;
-
-			// The text is written with showText() method
-			String text2 = joiner.toString();
-			String text = text2;
-			List<String> lines = new ArrayList<String>();
-			int lastSpace = -1;
-			while (text.length() > 0) {
-				int spaceIndex = text.indexOf(' ', lastSpace + 1);
-				if (spaceIndex < 0)
-					spaceIndex = text.length();
-				String subString = text.substring(0, spaceIndex);
-				float size = fontSize * pdfFont.getStringWidth(subString) / 1000;
-				if (size > width) {
-					if (lastSpace < 0)
-						lastSpace = spaceIndex;
-					subString = text.substring(0, lastSpace);
-					lines.add(subString);
-					text = text.substring(lastSpace).trim();
-					lastSpace = -1;
-				} else if (spaceIndex == text.length()) {
-					lines.add(text);
-					text = "";
-				} else {
-					lastSpace = spaceIndex;
+			FileWriter writer = new FileWriter(
+					"C:\\Users\\HP\\Desktop\\ScrapingData\\HtmlFile" + dtf.format(now) + ".html");
+			writer.write(joinerdata.toString());
+			writer.close();
+		} else if (format.equals(csv)) {
+			for (Element table : doc.getElementsByTag("table")) {
+				for (Element trElement : table.getElementsByTag("tr")) {
+					for (Element tdElement : trElement.getElementsByTag("th")) {
+						joinerdata.add(tdElement.text());
+					}
+					for (Element element : trElement.getElementsByTag("td")) {
+						joinerdata.add(element.text());
+					}
 				}
 			}
-			// Text is written between beginText() methods.
-			contentStream.beginText();
-			// We set the font and text leading.
-			contentStream.setFont(pdfFont, fontSize);
-			// We start a new line of text with newLineAtOffset() method. The origin of a
-			// page is at the bottom-left corner
-			contentStream.newLineAtOffset(startX, startY);
-			for (String line : lines) {
-				contentStream.showText(line);
-				// With the newLine() method, we move to the start of the next line of text
-				contentStream.newLineAtOffset(0, -leading);
-			}
-			// Text is written between endText() methods.
-			contentStream.endText();
-			// Stream must be closed before saving document.
-			contentStream.close();
-			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss");
-			LocalDateTime now = LocalDateTime.now();
+			FileWriter csvWriter = new FileWriter(
+					"C:\\Users\\HP\\Desktop\\ScrapingData\\CSVFile" + dtf.format(now) + ".csv");
+			csvWriter.append(joinerdata.toString());
+			csvWriter.flush();
+			csvWriter.close();
+		}
 
-			if (format.equals(pdf)) {
+		System.out.println(joiner.toString());
+		// A new PDDocument is created. By default, the document has an A4 format.
+		if (format.equals(pdf)) {
+			PDDocument document = null;
+			try {
+				document = new PDDocument();
+				// A new page is created and added to the document
+				PDPage page = new PDPage();
+				document.addPage(page);
+				// To write to a PDF page, we have to create a PDPageContentStream object
+				PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+				PDFont pdfFont = PDType1Font.TIMES_ITALIC;
+				float fontSize = 11;
+				float leading = 1.5f * fontSize;
+				// A rectangle, expressed in default user space units, defining the boundaries
+				// of the physical medium on which the page is intended
+				PDRectangle mediabox = page.getMediaBox();
+				float marginX = 80;
+				float marginY = 60;
+				float width = mediabox.getWidth() - 2 * marginX;
+				float startX = mediabox.getLowerLeftX() + marginX;
+				float startY = mediabox.getUpperRightY() - marginY;
+				// The text is written with showText() method
+				String text2 = joiner.toString();
+				String text = text2;
+				List<String> lines = new ArrayList<String>();
+				int lastSpace = -1;
+				while (text.length() > 0) {
+					int spaceIndex = text.indexOf(' ', lastSpace + 1);
+					if (spaceIndex < 0)
+						spaceIndex = text.length();
+					String subString = text.substring(0, spaceIndex);
+					float size = fontSize * pdfFont.getStringWidth(subString) / 1000;
+					if (size > width) {
+						if (lastSpace < 0)
+							lastSpace = spaceIndex;
+						subString = text.substring(0, lastSpace);
+						lines.add(subString);
+						text = text.substring(lastSpace).trim();
+						lastSpace = -1;
+					} else if (spaceIndex == text.length()) {
+						lines.add(text);
+						text = "";
+					} else {
+						lastSpace = spaceIndex;
+					}
+				}
+				// Text is written between beginText() methods.
+				contentStream.beginText();
+				// We set the font and text leading.
+				contentStream.setFont(pdfFont, fontSize);
+				// We start a new line of text with newLineAtOffset() method. The origin of a
+				// page is at the bottom-left corner
+				contentStream.newLineAtOffset(startX, startY);
+				for (String line : lines) {
+					contentStream.showText(line);
+					// With the newLine() method, we move to the start of the next line of text
+					contentStream.newLineAtOffset(0, -leading);
+				}
+				// Text is written between endText() methods.
+				contentStream.endText();
+				// Stream must be closed before saving document.
+				contentStream.close();
+
 				String data = "C:\\Users\\HP\\Desktop\\ScrapingData\\PdfFile" + dtf.format(now) + ".pdf";
 				document.save(new File(data));
-			} else if (format.equals(csv)) {
-				String data = "C:\\Users\\HP\\Desktop\\ScrapingData\\CSVFile" + dtf.format(now) + ".csv";
-				document.save(new File(data));
-			} else if (format.equals(html)) {
-				String data = "C:\\Users\\HP\\Desktop\\ScrapingData\\HtmlFile" + dtf.format(now) + ".html";
-				document.save(new File(data));
-			}
-			// Set data in database
-			UserScrappedSite userScrappedSite = new UserScrappedSite();
-			userScrappedSite.setWebsiteName(url);
-			userScrappedSite.setEmail(email);
-			userScrappedSite.setDate(now);
-			userScrappedSite.setUserId(user.getId());
-			userScrappedSiteRepository.save(userScrappedSite);
-			System.out.println("PDF is successfully created");
-			LOGGER.info("Successfully showing the scrapped data");
-		} finally {
-			if (doc != null) {
-				document.close();
+				System.out.println("PDF is successfully created");
+			} finally {
+				if (doc != null) {
+					document.close();
+				}
 			}
 		}
-		return new Response(200, "PDF is successfully created", true);
+		// Set data in database
+		UserScrappedSite userScrappedSite = new UserScrappedSite();
+		userScrappedSite.setWebsiteName(url);
+		userScrappedSite.setEmail(email);
+		userScrappedSite.setDate(now);
+		userScrappedSite.setUserId(user.getId());
+		userScrappedSite.setFormat(format);
+		userScrappedSiteRepository.save(userScrappedSite);
+		LOGGER.info(format.toUpperCase() + " file is successfully created");
+		return new Response(200, format.toUpperCase() + " file is successfully created", true);
 	}
 
 	/**
@@ -197,8 +216,6 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 	 */
 	@Override
 	public Response getWebScrapingData(String filePath, String token) throws Exception {
-		System.out.println("filepath ---> " + filePath);
-		System.out.println("token--->" + token);
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
 		// Check if user is present or not
@@ -217,5 +234,31 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 		}
 		LOGGER.info("Successfully showing the scrapped data");
 		return new Response(200, "Successfully showing the scrapped data", text);
+	}
+
+	/**
+	 * Already retrieving data that websites have been scrapped
+	 */
+	@Override
+	public Response getAllWebSrapingSite(String format, String token) {
+		String email = jwtToken.getToken(token);
+		List<UserScrappedSite> scrappedSites = userScrappedSiteRepository.findAll();
+		User user = userRepository.findByEmail(email);
+		if (user == null) {
+			LOGGER.warning("Invalid user");
+			throw new InvalidUser(messageData.Invalid_User);
+		}
+		if (user.getEmail() != null) {
+			List<UserScrappedSite> userScrappedSites = scrappedSites.stream()
+					.filter(scrap -> scrap.getFormat().equals(format)).collect(Collectors.toList());
+			System.out.println(format);
+			List<UserScrappedSite> userScrappedSite = userScrappedSites.stream()
+					.filter(e -> e.getUserId().equals(user.getId())).collect(Collectors.toList());
+			System.out.println(userScrappedSites);
+			LOGGER.info("Successfully showing the UserScrappedSite list data");
+			return new Response(200, "Successfully showing the UserScrappedSite list data", userScrappedSite);
+		}
+		LOGGER.warning("The UserScrappedSite list data is not present");
+		return new Response(400, " The UserScrappedSite list data is not present", false);
 	}
 }

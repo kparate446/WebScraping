@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +37,7 @@ public class UserScrapingContoller {
 	 * @throws Exception
 	 */
 	@PostMapping("/addwebscripe")
-	public ResponseEntity<String> addWebScraping(String url, String format, @RequestHeader String token) throws Exception {
+	public ResponseEntity<String> addWebScraping(@RequestParam String url,@RequestParam String format, @RequestHeader String token) throws Exception {
 		Response response = service.addScrappedSite(url,format, token);
 		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
 	}
@@ -52,6 +53,18 @@ public class UserScrapingContoller {
 	@PostMapping("/getwebscripe")
 	public ResponseEntity<Response> getWebScripeData(@RequestParam String filePath, @RequestHeader String token) throws Exception {
 		Response response = service.getWebScrapingData(filePath,token);
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
+	}	
+	
+	/**
+	 * Purpose : Already retrieving data that websites have been scrapped
+	 * @param format : Which format do you want the data from
+	 * @param token : Verified the user
+	 * @return : Response
+	 */
+	@GetMapping("/getalluserscrapedsite")
+	public ResponseEntity<Response> getAllUserScrapedSite(@RequestParam String format, @RequestHeader String token) {
+		Response response = service.getAllWebSrapingSite(format, token);
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}	
 }

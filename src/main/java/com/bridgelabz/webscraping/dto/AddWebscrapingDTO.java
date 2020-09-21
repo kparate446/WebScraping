@@ -1,17 +1,8 @@
 package com.bridgelabz.webscraping.dto;
 
 public class AddWebscrapingDTO {
-//	private LocalDateTime date = LocalDateTime.now();
 	private String websiteName;
 	private String email;
-
-//	public LocalDateTime getDate() {
-//		return date;
-//	}
-//
-//	public void setDate(LocalDateTime date) {
-//		this.date = date;
-//	}
 
 	public String getWebsiteName() {
 		return websiteName;
