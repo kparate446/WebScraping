@@ -271,7 +271,6 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 		if (user.getEmail() != null) {
 			List<UserScrappedSite> userScrappedSites = scrappedSites.stream()
 					.filter(scrap -> scrap.getFormat().equals(format)).collect(Collectors.toList());
-			System.out.println(format);
 			List<UserScrappedSite> userScrappedSite = userScrappedSites.stream()
 					.filter(e -> e.getUserId().equals(user.getId())).collect(Collectors.toList());
 			System.out.println(userScrappedSites);
