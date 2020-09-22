@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,9 +56,9 @@ public class UserController {
 	 * @return :- Response
 	 */
 	@PostMapping("/validateuser/{token}")
-	public ResponseEntity<String> validateUser(@RequestHeader String token) {
+	public ResponseEntity<Response> validateUser(@PathVariable String token) {
 		Response response = service.validateUser(token);
-		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 
 	/**
@@ -92,10 +92,10 @@ public class UserController {
 	 * @param resetPasswordDTO : Access the resetPasswordDTO Data
 	 * @return : Response
 	 */
-	@PutMapping("/resetpassword")
-	public ResponseEntity<String> resetpassword(@RequestHeader String token, ResetPasswordDTO resetPasswordDTO) {
+	@PostMapping("/resetpassword")
+	public ResponseEntity<Response> resetpassword(@RequestParam String token, @RequestBody ResetPasswordDTO resetPasswordDTO) {
 		Response response = service.resetPassword(token, resetPasswordDTO);
-		return new ResponseEntity<String>(response.getMessage(), HttpStatus.OK);
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 
 	/**

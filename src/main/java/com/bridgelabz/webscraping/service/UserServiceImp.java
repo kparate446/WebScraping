@@ -93,7 +93,7 @@ public class UserServiceImp implements IUserService {
 		String token = jwtToken.generateToken(userData.getEmail());
 		// Send the token in email
 		email = massageResponse.verifyMail(userData.getEmail(), token,
-				"\t Validate your email \n" + "http://localhost:8080/validate?token=");
+				"\t Validate your email \n" + "http://localhost:8080/user/validateuser/");
 		emailSender.sendEmail(email);
 		if (registrationDTO.getPassword().equals(registrationDTO.getCofirmPasword())) {
 			// Encoded the password stored in database
@@ -122,7 +122,7 @@ public class UserServiceImp implements IUserService {
 			LOGGER.warning("Invalid User");
 			throw new InvalidUser(messageData.Invalid_User);
 		}
-//		if (user.isValidate()) {
+		if (user.isValidate()) {
 			// decode the password
 			if (passConfig.encoder().matches(loginDTO.getPassword(), user.getPassword())) {
 				LOGGER.info("You are Successfully Logged-in");
@@ -131,10 +131,10 @@ public class UserServiceImp implements IUserService {
 				LOGGER.warning("Invalid password");
 				throw new InvalidPassword(messageData.Invalid_Password);
 			}
-//		} else {
-//			LOGGER.warning("Not Valid");
-//			throw new InvalidUser(messageData.Invalid_User);
-//		}
+		} else {
+			LOGGER.warning("Not Valid");
+			throw new InvalidUser(messageData.Invalid_User);
+		}
 	}
 
 	/**
@@ -170,7 +170,7 @@ public class UserServiceImp implements IUserService {
 		if (user.isValidate()) {
 			String token = jwtToken.generateToken(forgotPasswordDTO.getEmail());
 			email = massageResponse.verifyMail(forgotPasswordDTO.getEmail(), token,
-					"\t Forgot password \n" + "http://localhost:4200/resetpassword");
+					"\t Forgot password \n" + "http://localhost:4200/resetpassword/");
 			emailSender.sendEmail(email);
 			userRepository.save(user);
 			System.out.println(token);
@@ -186,6 +186,7 @@ public class UserServiceImp implements IUserService {
 	 */
 	@Override
 	public Response resetPassword(String token, ResetPasswordDTO resetPasswordDTO) {
+		System.out.println(token);
 		String email = jwtToken.getToken(token);
 		User user = userRepository.findByEmail(email);
 		// Check if user is present or not

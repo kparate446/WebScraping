@@ -1,7 +1,5 @@
 package com.bridgelabz.webscraping.model;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -9,11 +7,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class UserScrappedSite {
 	@Id
 	private String id;
-	private LocalDateTime date = LocalDateTime.now();
+	private String date;
 	private String websiteName;
 	private String email;
 	private String userId;
 	private String format;
+	private String fileName;
 
 	public String getId() {
 		return id;
@@ -23,11 +22,11 @@ public class UserScrappedSite {
 		this.id = id;
 	}
 
-	public LocalDateTime getDate() {
+	public String getDate() {
 		return date;
 	}
 
-	public void setDate(LocalDateTime date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 
@@ -63,9 +62,17 @@ public class UserScrappedSite {
 		this.format = format;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
 	@Override
 	public String toString() {
 		return "UserScrappedSite [id=" + id + ", date=" + date + ", websiteName=" + websiteName + ", email=" + email
-				+ ", userId=" + userId + ", format=" + format + "]";
+				+ ", userId=" + userId + ", format=" + format + ", fileName=" + fileName + "]";
 	}
 }

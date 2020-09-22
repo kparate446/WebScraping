@@ -70,6 +70,7 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 		String pdf = "pdf", csv = "csv", html = "html";
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss");
 		LocalDateTime now = LocalDateTime.now();
+		UserScrappedSite userScrappedSite = new UserScrappedSite();
 
 		// Check if user is present or not
 		if (user == null) {
@@ -105,6 +106,10 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 			}
 			FileWriter writer = new FileWriter(
 					"C:\\Users\\HP\\Desktop\\ScrapingData\\HtmlFile" + dtf.format(now) + ".html");
+			String data = "C:\\Users\\HP\\Desktop\\ScrapingData\\HtmlFile" + dtf.format(now) + ".html";
+			System.out.println("data" + data);
+			userScrappedSite.setFileName(data);
+			userScrappedSiteRepository.save(userScrappedSite);
 			writer.write(joinerdata.toString());
 			writer.close();
 		} else if (format.equals(csv)) {
@@ -192,6 +197,8 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 
 				String data = "C:\\Users\\HP\\Desktop\\ScrapingData\\PdfFile" + dtf.format(now) + ".pdf";
 				document.save(new File(data));
+				userScrappedSite.setFileName(data);
+				userScrappedSiteRepository.save(userScrappedSite);
 				System.out.println("PDF is successfully created");
 			} finally {
 				if (doc != null) {
@@ -200,10 +207,9 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 			}
 		}
 		// Set data in database
-		UserScrappedSite userScrappedSite = new UserScrappedSite();
 		userScrappedSite.setWebsiteName(url);
 		userScrappedSite.setEmail(email);
-		userScrappedSite.setDate(now);
+		userScrappedSite.setDate(dtf.format(now));
 		userScrappedSite.setUserId(user.getId());
 		userScrappedSite.setFormat(format);
 		userScrappedSiteRepository.save(userScrappedSite);
@@ -211,9 +217,6 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 		return new Response(200, format.toUpperCase() + " file is successfully created", true);
 	}
 
-	/**
-	 * Getting all Web Scraping data details
-	 */
 	@Override
 	public Response getWebScrapingData(String filePath, String token) throws Exception {
 		String email = jwtToken.getToken(token);
@@ -223,14 +226,31 @@ public class UserScrappedSiteServiceImp implements IUserScrappedSiteService {
 			LOGGER.warning("Invalid user");
 			throw new InvalidUser(messageData.Invalid_User);
 		}
-		// We load a PDF document from the src/main/resources directory
-		File myFile = new File(filePath);
-		String text;
-		try (PDDocument doc = PDDocument.load(myFile)) {
-			// PDFTextStripper is used to extract text from the PDF file.
-			PDFTextStripper stripper = new PDFTextStripper();
-			text = stripper.getText(doc);
-			System.out.println(text);
+		String text = null;
+		String pdf = ".pdf", html = "html";
+		String format;
+		if (filePath == null || filePath.length() < 4) {
+			format = filePath;
+		} else {
+			format = filePath.substring(filePath.length() - 4);
+		}
+		System.out.println("data" + format);
+		if (format.equals(pdf)) {
+			File myFile = new File(filePath);
+			try (PDDocument doc = PDDocument.load(myFile)) {
+				// PDFTextStripper is used to extract text from the PDF file.
+				PDFTextStripper stripper = new PDFTextStripper();
+				text = stripper.getText(doc);
+				
+				LOGGER.info("Successfully showing the scrapped data");
+				return new Response(200, "Successfully showing the scrapped data", text);
+			}
+		} else if (format.equals(html)) {
+			File file = new File(filePath);
+			Document document = Jsoup.parse(file, "utf-8");
+			text = document.html();
+			LOGGER.info("Successfully showing the scrapped data");
+			return new Response(200, "Successfully showing the scrapped data", text);
 		}
 		LOGGER.info("Successfully showing the scrapped data");
 		return new Response(200, "Successfully showing the scrapped data", text);
